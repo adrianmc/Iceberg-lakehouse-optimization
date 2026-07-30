@@ -32,7 +32,7 @@ repositorio documenta y corrige los errores más costosos que aparecen en campo:
 > *"Impala supports only the MOR mode and will fail if configured for copy-on-write.
 > Impala does support reading copy-on-write tables."*
 
-Consecuencia: el modo de escritura **no se elige por patrón de uso en abstracto**, sino
+Consecuencia: el modo de escritura **no se elige por patrón de uso en aleatorio**, sino
 primero por **qué motor ejecuta los `DELETE` / `UPDATE` / `MERGE`**.
 
 | Motor que escribe | Modos disponibles |
@@ -49,11 +49,11 @@ primero por **qué motor ejecuta los `DELETE` / `UPDATE` / `MERGE`**.
 El orden **no es negociable**:
 
 ```
-① OPTIMIZE TABLE          → materializa delete files, compacta archivos pequeños
-② EXPIRE_SNAPSHOTS        → elimina snapshots viejos y sus data files exclusivos
-③ REMOVE_ORPHAN_FILES     → elimina archivos sin referencia en ningún snapshot
-④ COMPUTE STATS           → refresca estadísticas del optimizador de Impala
-⑤ INVALIDATE METADATA     → solo si el mantenimiento corrió desde CDE/Spark
+1. OPTIMIZE TABLE          → materializa delete files, compacta archivos pequeños
+2. EXPIRE_SNAPSHOTS        → elimina snapshots viejos y sus data files exclusivos
+3. REMOVE_ORPHAN_FILES     → elimina archivos sin referencia en ningún snapshot
+4. COMPUTE STATS           → refresca estadísticas del optimizador de Impala
+5. INVALIDATE METADATA     → solo si el mantenimiento corrió desde CDE/Spark
 ```
 
 Saltarse ① en una tabla MoR hace que ② y ③ **no liberen espacio**: los delete files siguen
