@@ -9,11 +9,11 @@
 # excepto el mantenedor) más la regla "Restrict updates" del ruleset.
 
 # Propietario global — toda modificación requiere su aprobación
-*                       @REEMPLAZAR-USUARIO
+*                       @adrianmc
 
 # Rutas críticas — mismo propietario, declaradas explícitamente por trazabilidad
-/sql/                   @REEMPLAZAR-USUARIO
-/cde/                   @REEMPLAZAR-USUARIO
-/scripts/               @REEMPLAZAR-USUARIO
-/docs/                  @REEMPLAZAR-USUARIO
-/.github/               @REEMPLAZAR-USUARIO
+/sql/                   @adrianmc
+/cde/                   @adrianmc
+/scripts/               @adrianmc
+/docs/                  @adrianmc
+/.github/               @adrianmc
