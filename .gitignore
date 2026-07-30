@@ -1,0 +1,30 @@
+# Salidas del script de inventario S3
+inventario_*.txt
+
+# Credenciales — nunca deben versionarse
+.env
+.env.*
+scripts/config.env
+logs/
+*.pem
+*.key
+credentials
+config.ini
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+
+# Editores
+.vscode/
+.idea/
+*.swp
+.DS_Store
+
+# Artefactos locales
+*.log
+*.tmp
+/tmp/

@@ -1,0 +1,65 @@
+name: validate
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Validaciones del asset
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Sintaxis de Python (jobs CDE)
+        run: |
+          python -m compileall -q cde/
+          echo "OK — sintaxis Python válida"
+
+      - name: Sintaxis de Bash
+        run: |
+          for f in scripts/*.sh; do
+            bash -n "$f" && echo "OK — $f"
+          done
+
+      - name: Sin credenciales embebidas
+        run: |
+          if grep -rniE '(password|passwd|secret|api[_-]?key|token)[[:space:]]*=[[:space:]]*["'"'"'][^<$"'"'"']' \
+               --include='*.sql' --include='*.py' --include='*.sh' --include='*.md' . ; then
+            echo "::error::Se detectaron posibles credenciales embebidas"
+            exit 1
+          fi
+          echo "OK — sin credenciales detectadas"
+
+      - name: Sin instrucciones de borrado directo en S3
+        run: |
+          # Permitido solo en líneas de advertencia (comentadas o precedidas de NUNCA/NO)
+          if grep -rnE '^[[:space:]]*aws s3 rm' --include='*.sh' --include='*.py' . ; then
+            echo "::error::Instrucción de borrado directo en S3 detectada"
+            exit 1
+          fi
+          echo "OK — sin borrado directo en S3"
+
+      - name: Placeholders sin reemplazar en CODEOWNERS
+        run: |
+          if grep -q 'REEMPLAZAR-USUARIO' .github/CODEOWNERS; then
+            echo "::warning::CODEOWNERS aún contiene el placeholder REEMPLAZAR-USUARIO"
+          fi
+
+      - name: Sin nombres de clientes reales
+        run: |
+          # Lista de patrones de objetos de clientes que no deben filtrarse al asset.
+          # Se excluyen los archivos meta que documentan la propia validación.
+          PATRONES='bd_equipo|mediated_sms|bd_vr[0-9]|workshop_cdp'
+          if grep -rniE "$PATRONES" \
+               --include='*.sql' --include='*.md' --include='*.py' \
+               --exclude-dir='.github' --exclude='CONTRIBUTING.md' . ; then
+            echo "::error::Se detectaron nombres de objetos de clientes reales"
+            exit 1
+          fi
+          echo "OK — sin nombres de clientes reales"

@@ -1,0 +1,37 @@
+name: Nuevo patrón o script
+description: Proponer un patrón operativo, script o sección adicional
+title: "[feat] "
+labels: ["feat"]
+body:
+  - type: textarea
+    id: problema
+    attributes:
+      label: Qué problema resuelve
+      description: Situación concreta encontrada en campo
+    validations:
+      required: true
+
+  - type: textarea
+    id: propuesta
+    attributes:
+      label: Propuesta
+      render: sql
+
+  - type: dropdown
+    id: motor
+    attributes:
+      label: Motor objetivo
+      multiple: true
+      options:
+        - Impala (CDW)
+        - Hive (CDW)
+        - Spark / CDE
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: validado
+    attributes:
+      label: Estado de validación
+      options:
+        - label: Ya fue probado en un ambiente CDW real

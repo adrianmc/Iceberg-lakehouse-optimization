@@ -1,0 +1,19 @@
+# CODEOWNERS — Estándar Iceberg v2 Telco / Cloudera CDW
+#
+# IMPORTANTE: este archivo NO bloquea commits por sí solo.
+# Solo enruta solicitudes de revisión. Para que tenga efecto vinculante se debe activar
+# "Require review from Code Owners" en el ruleset que protege la rama por defecto.
+# Ver docs/05-proteccion-repositorio.md
+#
+# El control efectivo de escritura son los permisos de colaborador (rol Read para todos
+# excepto el mantenedor) más la regla "Restrict updates" del ruleset.
+
+# Propietario global — toda modificación requiere su aprobación
+*                       @REEMPLAZAR-USUARIO
+
+# Rutas críticas — mismo propietario, declaradas explícitamente por trazabilidad
+/sql/                   @REEMPLAZAR-USUARIO
+/cde/                   @REEMPLAZAR-USUARIO
+/scripts/               @REEMPLAZAR-USUARIO
+/docs/                  @REEMPLAZAR-USUARIO
+/.github/               @REEMPLAZAR-USUARIO

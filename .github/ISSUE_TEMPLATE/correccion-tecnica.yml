@@ -1,0 +1,60 @@
+name: Corrección técnica
+description: Reportar un comando incorrecto, sintaxis inválida o afirmación errónea
+title: "[fix] "
+labels: ["fix", "requiere-validacion"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Gracias por reportar. Para que la corrección sea aceptable necesitamos evidencia
+        reproducible — no basta con "en Spark funciona distinto".
+
+  - type: input
+    id: archivo
+    attributes:
+      label: Archivo afectado
+      placeholder: "sql/05-mantenimiento.sql"
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Qué dice actualmente
+      render: sql
+    validations:
+      required: true
+
+  - type: textarea
+    id: esperado
+    attributes:
+      label: Qué debería decir
+      render: sql
+    validations:
+      required: true
+
+  - type: textarea
+    id: evidencia
+    attributes:
+      label: Evidencia
+      description: Salida real de la ejecución, enlace a documentación oficial, o JIRA
+    validations:
+      required: true
+
+  - type: dropdown
+    id: motor
+    attributes:
+      label: Motor donde se validó
+      options:
+        - Impala (CDW)
+        - Hive (CDW)
+        - Spark / CDE
+        - No validado aún
+    validations:
+      required: true
+
+  - type: input
+    id: runtime
+    attributes:
+      label: Versión de Cloudera Runtime
+      placeholder: "7.3.1"
