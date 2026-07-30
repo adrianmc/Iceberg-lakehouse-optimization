@@ -12,10 +12,10 @@ Versionado según [SemVer](https://semver.org/lang/es/).
 - **`cde/maintenance_job.py` usaba sintaxis de Impala dentro de una sesión Spark.**
   El job ejecutaba `OPTIMIZE TABLE` y `ALTER TABLE ... EXECUTE EXPIRE_SNAPSHOTS(...)` a
   través de `spark.sql()`. Spark no entiende esos comandos — son de Impala y Hive. El job
-  habría fallado en la primera ejecución. Reescrito con los procedimientos correctos:
+  habría fallado en la primera ejecución. Se reescribe con los procedimientos correctos:
   `CALL <catalog>.system.rewrite_data_files`, `expire_snapshots` y `remove_orphan_files`.
 
-  Es exactamente el error que este repositorio documenta como causa raíz: aplicar la
+  Es el error que este repositorio documenta como causa raíz: aplicar la
   sintaxis de un motor a otro.
 
 - **Faltaba el paso de `rewrite_position_delete_files` en el camino por Spark.**
