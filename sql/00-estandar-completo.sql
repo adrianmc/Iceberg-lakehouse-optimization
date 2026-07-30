@@ -7,6 +7,7 @@
                     o impala-shell. Se indica explícitamente dónde se requiere Hive o Spark/CDE.
    Formato        : Apache Iceberg v2
    Versión doc    : 1.0
+   Autor: Solutions Engineering - SSA
    ============================================================================================ */
 
 
@@ -19,6 +20,7 @@
    Documentación Cloudera (Row-level operations):
      "Impala supports only the MOR mode and will fail if configured for copy-on-write.
       Impala does support reading copy-on-write tables."
+      https://docs.cloudera.com/cdw-runtime/cloud/iceberg-how-to/topics/iceberg-row-level-ops.html 
 
    Implicaciones prácticas:
      · Un DELETE o UPDATE ejecutado DESDE IMPALA siempre genera position delete files.
@@ -29,14 +31,14 @@
      · Spark/CDE sí soporta ambos modos.
 
    Conclusión de diseño:
-     El modo de escritura NO se elige en abstracto — se elige en función de QUÉ MOTOR
+     El modo de escritura NO se elige al azar — se elige en función de QUÉ MOTOR
      ejecuta los DELETE / UPDATE / MERGE sobre esa tabla. Ver SECCIÓN 2.
 
 
-   ⚠ HECHO 0.2 — NINGÚN COMANDO DE BORRADO LIBERA ESPACIO EN S3 POR SÍ SOLO
+   ⚠ HECHO 0.2 — NINGÚN COMANDO DE BORRADO LIBERA ESPACIO EN S3/ADLS POR SÍ SOLO
    --------------------------------------------------------------------------------------------
    DELETE, UPDATE, MERGE, INSERT OVERWRITE y ALTER TABLE DROP PARTITION crean un nuevo
-   snapshot. Los data files del snapshot anterior siguen físicamente en S3 hasta que ese
+   snapshot. Los data files del snapshot anterior siguen físicamente en S3/ADLS hasta que ese
    snapshot expire. La liberación física SIEMPRE requiere EXPIRE_SNAPSHOTS posterior.
 
 
@@ -46,6 +48,7 @@
      "Expiring a snapshot does not remove old metadata files by default. You must clean up
       metadata files using write.metadata.delete-after-commit.enabled=true and
       write.metadata.previous-versions-max table properties."
+      https://docs.cloudera.com/cdw-runtime/1.5.4/iceberg-how-to/topics/iceberg-expire-snapshots.html
 
    Sin estas dos propiedades, el prefijo /metadata/ crece indefinidamente aunque los data
    files sí se liberen.
@@ -54,7 +57,7 @@
    ⚠ HECHO 0.4 — EN TABLAS EXTERNAS, external.table.purge CONTROLA EL BORRADO FÍSICO
    --------------------------------------------------------------------------------------------
    Si la tabla es EXTERNAL_TABLE y external.table.purge NO está en 'true', Iceberg no
-   elimina los archivos físicos de S3. Los snapshots expiran del catálogo pero los parquets
+   elimina los archivos físicos de S3/ADLS. Los snapshots expiran del catálogo pero los parquets
    permanecen. Ver SECCIÓN 4.
 
 
@@ -72,14 +75,14 @@
    REMOVE_ORPHAN_FILES('<ts>') solo elimina huérfanos creados ANTES de <ts>. Los delete
    files que el OPTIMIZE acaba de dejar huérfanos tienen timestamp de creación reciente.
    Si <ts> es anterior al momento del OPTIMIZE, esos archivos NO se eliminan y quedan
-   acumulados en S3 indefinidamente.
+   acumulados en S3/ADLS indefinidamente.
 
    Regla práctica: usar un timestamp POSTERIOR al fin de la ventana de mantenimiento.
 
 
-   ✘ ANTIPATRÓN ABSOLUTO — NUNCA BORRAR ARCHIVOS DIRECTAMENTE DESDE S3
+   ✘ OJO — NUNCA BORRAR ARCHIVOS DIRECTAMENTE DESDE S3/ADLS
    --------------------------------------------------------------------------------------------
-   Eliminar objetos desde la consola de AWS, aws s3 rm, o cualquier script rompe la
+   Eliminar objetos desde la consola de AWS/Azure, aws s3 rm, Azure Cli, o cualquier script rompe la
    integridad del catálogo. Snapshots activos quedan apuntando a archivos inexistentes.
    El daño puede ser irrecuperable. Sin excepciones, sin importar la urgencia.
 
