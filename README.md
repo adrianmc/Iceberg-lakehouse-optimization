@@ -13,7 +13,7 @@
 ## Qué resuelve este asset
 
 Los patrones de gestión de datos heredados de Hive **no son seguros en Iceberg v2**. Este
-repositorio documenta y corrige los errores más costosos que aparecen en campo:
+repositorio documenta y corrige los errores más costosos que aparecen en ambientes reales:
 
 | Síntoma reportado por el cliente | Causa raíz real |
 |---|---|
